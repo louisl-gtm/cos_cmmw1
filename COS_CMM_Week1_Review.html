@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html{color-scheme:light dark}body{margin:0}img{max-width:100%}</style>
+<title>社群錦標賽跨團隊協作檢討</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+  :root{
+    --ink:#14171F; --ink2:#3D4452; --ink3:#6B7382;
+    --ground:#EDEFF3; --surface:#FFFFFF; --surface2:#F5F7FA;
+    --line:#D7DBE3; --line2:#E7EAF0;
+    --accent:#1F4FBF; --accent-soft:#E6ECFB;
+    --crit:#B3261E; --crit-soft:#FBE9E7;
+    --warn:#A8620A; --warn-soft:#FAF0DF;
+    --ok:#24694C; --ok-soft:#E4F2EB;
+    --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#E9ECF2; --ink2:#B2B9C6; --ink3:#868E9D;
+      --ground:#0E1118; --surface:#171B24; --surface2:#1E232E;
+      --line:#2C323E; --line2:#232935;
+      --accent:#86A9FF; --accent-soft:#1A2440;
+      --crit:#F2897F; --crit-soft:#33191A;
+      --warn:#E3A756; --warn-soft:#30250F;
+      --ok:#74C69D; --ok-soft:#14291F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#E9ECF2; --ink2:#B2B9C6; --ink3:#868E9D;
+    --ground:#0E1118; --surface:#171B24; --surface2:#1E232E;
+    --line:#2C323E; --line2:#232935;
+    --accent:#86A9FF; --accent-soft:#1A2440;
+    --crit:#F2897F; --crit-soft:#33191A;
+    --warn:#E3A756; --warn-soft:#30250F;
+    --ok:#74C69D; --ok-soft:#14291F;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:var(--sans); font-size:15px; line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1000px; margin:0 auto; padding-inline:20px; padding-block:0 72px}
+
+  /* ---------- header ---------- */
+  header.masthead{
+    background:var(--surface); border-bottom:1px solid var(--line);
+  }
+  .masthead-inner{
+    max-width:1000px; margin:0 auto; padding-inline:20px; padding-block:38px 30px;
+  }
+  .kicker{
+    font-family:var(--mono); font-size:11.5px; font-weight:600; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--accent); margin:0 0 14px;
+  }
+  h1{
+    font-size:clamp(27px,4.4vw,40px); line-height:1.25; font-weight:900;
+    letter-spacing:-.01em; margin:0 0 14px; text-wrap:balance;
+  }
+  .standfirst{
+    font-size:16px; color:var(--ink2); margin:0; max-width:64ch;
+  }
+  .meta-row{
+    display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:22px;
+    padding-top:18px; border-top:1px solid var(--line2);
+    font-family:var(--mono); font-size:12px; color:var(--ink3);
+  }
+  .meta-row b{color:var(--ink2); font-weight:600}
+
+  /* ---------- sections ---------- */
+  section{margin-top:52px}
+  .sec-head{display:flex; align-items:baseline; gap:12px; margin-bottom:18px;
+    padding-bottom:10px; border-bottom:2px solid var(--ink)}
+  .sec-num{font-family:var(--mono); font-size:12px; font-weight:600; color:var(--ink3)}
+  h2{font-size:21px; font-weight:700; letter-spacing:-.01em; margin:0}
+  .sec-note{font-size:13px; color:var(--ink3); margin:0 0 20px}
+
+  h3{font-size:15px; font-weight:700; margin:34px 0 12px;
+     display:flex; align-items:center; gap:9px}
+  h3 .h3-tag{font-family:var(--mono); font-size:11px; font-weight:600;
+     color:var(--ink3); letter-spacing:.08em}
+
+  p{margin:0 0 14px}
+
+  /* ---------- metric strip ---------- */
+  .metrics{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line);
+    margin-top:26px;
+  }
+  .metric{background:var(--surface); padding:18px 16px}
+  .metric .n{
+    font-family:var(--mono); font-weight:600; font-size:30px; line-height:1.1;
+    letter-spacing:-.02em; font-variant-numeric:tabular-nums; display:block;
+  }
+  .metric .n small{font-size:15px; font-weight:400; margin-left:2px}
+  .metric .l{display:block; font-size:12.5px; color:var(--ink3); margin-top:7px; line-height:1.5}
+  .metric.is-crit .n{color:var(--crit)}
+  .metric.is-warn .n{color:var(--warn)}
+
+  /* ---------- callout ---------- */
+  .callout{
+    background:var(--surface); border:1px solid var(--line);
+    border-left:4px solid var(--crit); padding:18px 20px; margin:24px 0;
+  }
+  .callout.is-warn{border-left-color:var(--warn)}
+  .callout.is-accent{border-left-color:var(--accent)}
+  .callout h4{margin:0 0 8px; font-size:14.5px; font-weight:700}
+  .callout p:last-child{margin-bottom:0}
+  .callout p{font-size:14px; color:var(--ink2)}
+
+  /* ---------- cause cards ---------- */
+  .causes{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:8px}
+  .cause{background:var(--surface); border:1px solid var(--line); padding:18px 18px 20px}
+  .cause .ct{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.1em;
+    color:var(--ink3); display:block; margin-bottom:9px}
+  .cause h4{margin:0 0 9px; font-size:15px; font-weight:700; line-height:1.45}
+  .cause p{font-size:13.5px; color:var(--ink2); margin:0; line-height:1.7}
+  .cause .owner{
+    display:inline-block; margin-top:13px; font-size:11.5px; font-family:var(--mono);
+    padding:3px 8px; background:var(--accent-soft); color:var(--accent);
+  }
+
+  /* ---------- rundown timeline ---------- */
+  .rundown{border:1px solid var(--line); background:var(--surface)}
+  .rd{display:grid; grid-template-columns:118px 1fr; border-top:1px solid var(--line2)}
+  .rd:first-child{border-top:0}
+  .rd-t{
+    font-family:var(--mono); font-size:12px; font-weight:600; color:var(--ink3);
+    padding:16px 14px; background:var(--surface2); border-right:1px solid var(--line2);
+    font-variant-numeric:tabular-nums; line-height:1.5;
+  }
+  .rd-t span{display:block; font-weight:400; font-size:11px; margin-top:3px; opacity:.8}
+  .rd-b{padding:15px 18px}
+  .rd-b h4{margin:0 0 6px; font-size:14.5px; font-weight:700}
+  .rd-b p{margin:0; font-size:13.5px; color:var(--ink2); line-height:1.7}
+  .rd-b .imp{
+    display:block; margin-top:9px; font-size:13px; color:var(--crit);
+    padding-left:14px; border-left:2px solid var(--crit-soft);
+  }
+  .rd.is-holiday .rd-t{background:var(--warn-soft); color:var(--warn)}
+
+  /* ---------- tables ---------- */
+  .scroller{overflow-x:auto; border:1px solid var(--line); background:var(--surface)}
+  table{border-collapse:collapse; width:100%; min-width:680px; font-size:13.5px}
+  caption{caption-side:bottom; text-align:left; font-size:12px; color:var(--ink3);
+    padding:10px 2px 0}
+  th,td{text-align:left; padding:12px 14px; border-bottom:1px solid var(--line2);
+    vertical-align:top; line-height:1.65}
+  thead th{
+    background:var(--surface2); font-size:11.5px; font-family:var(--mono); font-weight:600;
+    letter-spacing:.06em; color:var(--ink3); text-transform:uppercase;
+    border-bottom:1px solid var(--line); white-space:nowrap;
+  }
+  tbody tr:last-child td{border-bottom:0}
+  td.num{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .idc{font-family:var(--mono); font-size:12px; font-weight:600; color:var(--ink3); white-space:nowrap}
+
+  /* ---------- chips ---------- */
+  .chip{
+    display:inline-block; font-family:var(--mono); font-size:11px; font-weight:600;
+    padding:2px 7px; white-space:nowrap; line-height:1.7;
+  }
+  .chip-crit{background:var(--crit-soft); color:var(--crit)}
+  .chip-warn{background:var(--warn-soft); color:var(--warn)}
+  .chip-ok{background:var(--ok-soft); color:var(--ok)}
+  .chip-acc{background:var(--accent-soft); color:var(--accent)}
+  .chip-mut{background:var(--surface2); color:var(--ink3); border:1px solid var(--line2)}
+
+  /* ---------- issue rows ---------- */
+  .issue{
+    background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--line);
+    padding:16px 18px; margin-bottom:10px;
+  }
+  .issue.sev-high{border-left-color:var(--crit)}
+  .issue.sev-mid{border-left-color:var(--warn)}
+  .issue-top{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:9px}
+  .issue-top .idc{font-size:12.5px; color:var(--ink)}
+  .issue-top h4{margin:0; font-size:15px; font-weight:700; flex:1 1 220px}
+  .issue dl{margin:0; display:grid; grid-template-columns:78px 1fr; gap:6px 14px;
+    font-size:13.5px; line-height:1.7}
+  .issue dt{font-family:var(--mono); font-size:11.5px; color:var(--ink3);
+    padding-top:3px; letter-spacing:.05em}
+  .issue dd{margin:0; color:var(--ink2)}
+  .issue dd strong{color:var(--ink); font-weight:600}
+
+  /* ---------- appendix ---------- */
+  .appendix{
+    background:var(--surface); border:1px solid var(--line); padding:22px 24px;
+  }
+  .appendix pre{
+    margin:0; white-space:pre-wrap; word-break:break-word;
+    font-family:var(--mono); font-size:12px; line-height:1.85; color:var(--ink2);
+  }
+  footer{
+    margin-top:56px; padding-top:20px; border-top:1px solid var(--line);
+    font-size:12.5px; color:var(--ink3);
+  }
+  .ul{margin:0 0 14px; padding-left:20px}
+  .ul li{margin-bottom:6px; color:var(--ink2); font-size:14px}
+
+  @media (max-width:860px){
+    .causes{grid-template-columns:1fr}
+    .metrics{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:520px){
+    .rd{grid-template-columns:1fr}
+    .rd-t{border-right:0; border-bottom:1px solid var(--line2); padding:10px 14px;
+      display:flex; gap:10px; align-items:baseline}
+    .rd-t span{margin-top:0}
+    .issue dl{grid-template-columns:1fr}
+    .issue dt{padding-top:6px}
+  }
+</style>
+
+</head>
+<body>
+<header class="masthead">
+  <div class="masthead-inner">
+    <p class="kicker">Community Tournament · Week 1 Operations Review</p>
+    <h1>社群錦標賽 Week 1<br>跨團隊協作困境與人力衝擊檢討</h1>
+    <p class="standfirst">本報告彙整 Week 1 賽事期間台灣團隊、玩家、主播與轉播商回報之執行狀況。核心問題並非單一環節失誤，而是 <b>SEA 總部與越南代理商在前置溝通與即時同步上的系統性缺口</b>，導致台灣團隊被迫以臨時加班、週末到班的方式補位。中秋連假（9/25–9/28）將使同樣的應對模式無法複製。</p>
+    <div class="meta-row">
+      <div>製表日期：<b>2026 / 09 / 21（一）</b></div>
+      <div>涵蓋範圍：<b>Week 1 賽事週</b></div>
+      <div>提報單位：<b>TW 團隊</b></div>
+      <div>對象：<b>主管層級</b></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ 1. 重點摘要 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>重點摘要</h2></div>
+    <p class="sec-note">以下四項數字為本次檢討的核心事實，皆可回溯至 Week 1 實際執行紀錄。</p>
+
+    <div class="metrics">
+      <div class="metric is-crit">
+        <span class="n">12</span>
+        <span class="l">項待改善缺失<br>（營運 3 ／ 轉播 6 ／ 其他 3）</span>
+      </div>
+      <div class="metric is-crit">
+        <span class="n">3</span>
+        <span class="l">波臨時支援通知<br>同週 → 前一晚 → 比賽當天</span>
+      </div>
+      <div class="metric is-warn">
+        <span class="n">6<small>+ hr</small></span>
+        <span class="l">主播連續播報時數<br>全程無排定休息</span>
+      </div>
+      <div class="metric is-warn">
+        <span class="n">4<small> 天</small></span>
+        <span class="l">中秋連假 9/25–9/28<br>無法比照臨時調度</span>
+      </div>
+    </div>
+
+    <div class="callout">
+      <h4>一句話結論</h4>
+      <p>Week 1 的多數問題「可事前規劃卻未事前交付」。台灣團隊被迫以臨時人力吸收上游規劃落差；一旦進入中秋連假，這套臨時補位機制將失效，風險會直接外顯為玩家體驗與直播品質問題。</p>
+    </div>
+  </section>
+
+  <!-- ============ 2. 問題歸因 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>問題歸因：三個結構性缺口</h2></div>
+    <p class="sec-note">12 項缺失並非彼此獨立，可歸納為三類上游成因。</p>
+
+    <div class="causes">
+      <div class="cause">
+        <span class="ct">CAUSE A</span>
+        <h4>前置需求未一次性交付</h4>
+        <p>支援需求分三波在同週、前一晚與比賽當天才提出；廣告導流在開播後 30 分鐘才通知。台灣團隊無法批次規劃，只能逐次臨時調度人力。</p>
+        <span class="owner">SEA 總部 ／ 越南代理商</span>
+      </div>
+      <div class="cause">
+        <span class="ct">CAUSE B</span>
+        <h4>即時同步機制未落實</h4>
+        <p>原訂由越南代理商於 Discord 即時同步賽況，實際延遲且不完整；當日 Rundown 與事前版本不一致，且未開通台灣團隊的賽房檢視權限。</p>
+        <span class="owner">越南代理商</span>
+      </div>
+      <div class="cause">
+        <span class="ct">CAUSE C</span>
+        <h4>交付品質與版本控管失效</h4>
+        <p>賽前已由台灣團隊標記的圖文卡問題，直播中仍播出未修正版本；對外公告的 3v3 模式規則與實際執行方式不符。</p>
+        <span class="owner">越南代理商 ／ SEA 總部</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. 時間軸 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>臨時通知時間軸</h2></div>
+    <p class="sec-note">以賽事日（T 日）為基準排列。時間欄採相對節點標示，對應原始溝通中所述之「同週、前一晚、比賽當天」等時點。</p>
+
+    <div class="rundown">
+      <div class="rd">
+        <div class="rd-t">T–4 ~ T–2<span>賽事同週</span></div>
+        <div class="rd-b">
+          <h4>第一波：同週臨時追加人力與營運支援需求</h4>
+          <p>Week 1 賽事支援需求未於事前一次性提供，於賽事同週才陸續告知台灣團隊。</p>
+          <span class="imp">影響：工作日既有排程被迫重新調度，前置準備時間遭壓縮。</span>
+        </div>
+      </div>
+      <div class="rd">
+        <div class="rd-t">T–1<span>賽前一晚</span></div>
+        <div class="rd-b">
+          <h4>第二波：賽前一晚再次追加支援項目</h4>
+          <p>在已進入準備收尾階段時，再度新增需台灣端配合之項目。</p>
+          <span class="imp">影響：夜間加班應對，且無足夠時間進行品質確認。</span>
+        </div>
+      </div>
+      <div class="rd">
+        <div class="rd-t">T 日<span>比賽當天</span></div>
+        <div class="rd-b">
+          <h4>第三波：比賽當天現場再追加需求</h4>
+          <p>賽事進行中仍出現新的支援需求，台灣團隊須於當下即時應對。</p>
+          <span class="imp">影響：假日臨時到班；無緩衝時間，錯誤無法在上線前攔截。</span>
+        </div>
+      </div>
+      <div class="rd">
+        <div class="rd-t">T 日 +0:30<span>開播後</span></div>
+        <div class="rd-b">
+          <h4>直播廣告導流設定於開播後 30 分鐘才通知</h4>
+          <p>導流需求並非不可事前規劃項目，卻在直播已開始後才告知台灣端。</p>
+          <span class="imp">影響：導流效益受損，且需在直播進行中臨時調整設定。</span>
+        </div>
+      </div>
+      <div class="rd">
+        <div class="rd-t">09 / 20<span>賽事進行中</span></div>
+        <div class="rd-b">
+          <h4>多次長時間空轉，主播盲等</h4>
+          <p>賽況與下一場開賽時間未即時同步，主播在無資訊狀態下持續等待。</p>
+          <span class="imp">影響：直播出現多段長時間開天窗，觀看體驗與品牌形象受損。</span>
+        </div>
+      </div>
+      <div class="rd is-holiday">
+        <div class="rd-t">09 / 22–24<span>Week 2 前置</span></div>
+        <div class="rd-b">
+          <h4>台灣團隊要求：所有可事前規劃項目於本週三前完成溝通與設定</h4>
+          <p>繁中化素材與設計需求 9/22（二）EOD 前提供；賽事執行項目 9/23（三）前定案；廣告導流需求 9/24（四）前通知。</p>
+        </div>
+      </div>
+      <div class="rd is-holiday">
+        <div class="rd-t">09 / 25–28<span>中秋連假</span></div>
+        <div class="rd-b">
+          <h4>台灣國定假日 4 天（週五至下週一）</h4>
+          <p>連假期間臨時調度人力與跨時區溝通難度顯著提高，無法比照 Week 1 的臨時補位方式應對。</p>
+          <span class="imp">風險：若前置項目未於本週三前完成，Week 2 將缺乏台灣端的即時支援緩衝。</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. 人力衝擊 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>人力與資源衝擊統計</h2></div>
+    <p class="sec-note">因上游規劃落差而由台灣端吸收的額外投入，依職能別彙整。</p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr>
+            <th>受影響職能</th>
+            <th>實際狀況</th>
+            <th>額外投入形式</th>
+            <th>對應成因</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>賽事營運（TW）</strong></td>
+            <td>同週、前一晚、比賽當天共三波臨時支援需求</td>
+            <td><span class="chip chip-crit">工作日重新調度</span> <span class="chip chip-crit">週末臨時到班</span></td>
+            <td class="idc">Cause A</td>
+          </tr>
+          <tr>
+            <td><strong>賽事主播（Caster）</strong></td>
+            <td>實際播報逾 6 小時且無排定休息；9/20 多次長時間盲等空轉</td>
+            <td><span class="chip chip-crit">超時工作</span> <span class="chip chip-warn">全程無中場休息</span></td>
+            <td class="idc">Cause A · B</td>
+          </tr>
+          <tr>
+            <td><strong>台灣轉播商（Vendor）</strong></td>
+            <td>為排除直播卡頓已切換多條專線，問題仍存在，確認非台灣端所致</td>
+            <td><span class="chip chip-warn">額外線路與測試成本</span></td>
+            <td class="idc">Cause C</td>
+          </tr>
+          <tr>
+            <td><strong>設計（TW Design）</strong></td>
+            <td>賽前已標記之圖文卡仍播出未修正版，需重新製作 Week 2 素材</td>
+            <td><span class="chip chip-warn">素材重工</span> <span class="chip chip-mut">週末不提供待命</span></td>
+            <td class="idc">Cause C</td>
+          </tr>
+          <tr>
+            <td><strong>玩家溝通（TW）</strong></td>
+            <td>賽房裁判僅使用越南語，台灣選手無法理解指令並反映感受不公</td>
+            <td><span class="chip chip-crit">臨時翻譯與安撫</span></td>
+            <td class="idc">Cause B</td>
+          </tr>
+        </tbody>
+      </table>
+      <caption>註：以上皆為 Week 1 實際發生情形，非預估值。</caption>
+    </div>
+
+    <div class="callout is-warn">
+      <h4>連假期間的人力界線</h4>
+      <p>為利人力配置，中秋連假期間 <b>台灣端不安排設計人員待命</b>，任何臨時設計需求須由越南代理商內部自行完成。賽果社群圖本週已確認僅需 2 張，繁中模板亦已備妥，越南代理商僅需更新標頭為「Week 2」並替換冠軍資訊即可。</p>
+    </div>
+  </section>
+
+  <!-- ============ 5. 問題明細 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>問題明細與 Week 2 要求</h2></div>
+    <p class="sec-note">每項皆標註嚴重度、責任歸屬與對台灣端的實際影響。</p>
+
+    <h3>A. 賽事營運與溝通 <span class="h3-tag">3 ITEMS</span></h3>
+
+    <div class="issue sev-high">
+      <div class="issue-top"><span class="idc">A-1</span><h4>賽房裁判語言支援不足</h4><span class="chip chip-crit">高</span></div>
+      <dl>
+        <dt>現象</dt><dd>台灣選手回報，賽房裁判僅以越南語溝通，選手無法理解裁判指令。</dd>
+        <dt>影響</dt><dd>除影響賽程推進外，<strong>選手直接感受到不公平對待</strong>，形成玩家端負面觀感。</dd>
+        <dt>歸屬</dt><dd>越南代理商</dd>
+        <dt>Week 2</dt><dd>台灣選手所在賽房須配置可使用英語之裁判，台灣團隊方可以英文協助溝通。</dd>
+      </dl>
+    </div>
+
+    <div class="issue sev-high">
+      <div class="issue-top"><span class="idc">A-2</span><h4>賽況即時同步與 Rundown 版本不一致</h4><span class="chip chip-crit">高</span></div>
+      <dl>
+        <dt>現象</dt><dd>原協議由越南代理商於 Discord 即時同步賽事狀態，實際執行延遲且不完整；當日詳細 Rundown 與事前提供版本不同。</dd>
+        <dt>影響</dt><dd>台灣主播無法掌握賽程推進，<strong>台灣團隊亦無從協助</strong>。</dd>
+        <dt>歸屬</dt><dd>越南代理商（執行）／SEA 總部（未確保交付一致）</dd>
+        <dt>Week 2</dt><dd>優化訊息傳遞流程；賽前確認最終版 Rundown；賽中如有變動須立即通知台灣團隊。</dd>
+      </dl>
+    </div>
+
+    <div class="issue sev-mid">
+      <div class="issue-top"><span class="idc">A-3</span><h4>Discord 賽房權限未開通</h4><span class="chip chip-warn">中</span></div>
+      <dl>
+        <dt>現象</dt><dd>台灣團隊未取得所有參賽選手房間之檢視權限（名單先前已提供）。</dd>
+        <dt>影響</dt><dd>無法即時掌握現場狀況，突發問題發生時無法直接介入協助。</dd>
+        <dt>歸屬</dt><dd>越南代理商</dd>
+        <dt>Week 2</dt><dd>依先前提供之 Discord 名單，開通台灣團隊檢視權限。</dd>
+      </dl>
+    </div>
+
+    <h3>B. 轉播與流程管理 <span class="h3-tag">6 ITEMS</span></h3>
+
+    <div class="issue sev-mid">
+      <div class="issue-top"><span class="idc">B-1</span><h4>賽程超時、流程冗長</h4><span class="chip chip-warn">中</span></div>
+      <dl>
+        <dt>現象</dt><dd>延遲主因為 3v3 團隊模式單場時長過長，以及選手報到／登記耗時過久。</dd>
+        <dt>影響</dt><dd>直播整體節奏受損，觀看體驗拖沓。</dd>
+        <dt>歸屬</dt><dd>越南代理商 ／ SEA 總部（賽制設計）</dd>
+        <dt>Week 2</dt><dd>優化該流程以改善觀看節奏。</dd>
+      </dl>
+    </div>
+
+    <div class="issue sev-high">
+      <div class="issue-top"><span class="idc">B-2</span><h4>主播無排定休息時間</h4><span class="chip chip-crit">高</span></div>
+      <dl>
+        <dt>現象</dt><dd>Week 1 實際播報時間逾 6 小時，Rundown 中未安排任何休息時段，主播須全程連續在位。</dd>
+        <dt>影響</dt><dd>人員負荷過高，播報品質難以維持，亦為人力管理風險。</dd>
+        <dt>歸屬</dt><dd>越南代理商（Rundown 制定）</dd>
+        <dt>Week 2</dt><dd>明確排定主播休息時段（建議每小時 10 分鐘，結合技術暫停或小遊戲橋段），並載入 Rundown。</dd>
+      </dl>
+    </div>
+
+    <div class="issue sev-high">
+      <div class="issue-top"><span class="idc">B-3</span><h4>直播卡頓，問題源頭非台灣端</h4><span class="chip chip-crit">高</span></div>
+      <dl>
+        <dt>現象</dt><dd>台灣合作轉播商已切換至多條專用網路線路，卡頓情況仍持續，顯示問題不在台灣端。</dd>
+        <dt>影響</dt><dd>台灣端已投入額外線路與測試成本，但無法解決；直播品質持續受影響。</dd>
+        <dt>歸屬</dt><dd>越南代理商（推流端）</dd>
+        <dt>Week 2</dt><dd>本週內檢查推流設定、伺服器與線路狀況，並回覆檢測結果。</dd>
+      </dl>
+    </div>
+
+    <div class="issue sev-high">
+      <div class="issue-top"><span class="idc">B-4</span><h4>主播空轉、直播開天窗</h4><span class="chip chip-crit">高</span></div>
+      <dl>
+        <dt>現象</dt><dd>9 月 20 日出現多次長時間空白，主播在無任何資訊的情況下盲等。</dd>
+        <dt>影響</dt><dd>直播內容中斷，觀眾流失風險升高。</dd>
+        <dt>歸屬</dt><dd>越南代理商</dd>
+        <dt>Week 2</dt><dd>強化賽況即時更新（下一場預計開賽時間、延遲原因），使主播得以事前準備。</dd>
+      </dl>
+    </div>
+
+    <div class="issue sev-mid">
+      <div class="issue-top"><span class="idc">B-5</span><h4>3v3 模式選擇規則對外說明與實際不符</h4><span class="chip chip-warn">中</span></div>
+      <dl>
+        <dt>現象</dt><dd>對外公告為「7 種模式中隨機選擇」，實際執行卻依特定順序進行。</dd>
+        <dt>影響</dt><dd>選手無從準備，主播亦無法精準播報；存在對外說明不一致之爭議風險。</dd>
+        <dt>歸屬</dt><dd>SEA 總部 ／ 越南代理商</dd>
+        <dt>Week 2</dt><dd>於 Week 2 開賽前對外完整說明該機制。</dd>
+      </dl>
+    </div>
+
+    <div class="issue sev-mid">
+      <div class="issue-top"><span class="idc">B-6</span><h4>Wild Royale（單人賽）觀戰運鏡失焦</h4><span class="chip chip-warn">中</span></div>
+      <dl>
+        <dt>現象</dt><dd>觀戰鏡頭經常停留在選手移動畫面，錯過關鍵交戰。</dd>
+        <dt>影響</dt><dd>賽事精彩度無法呈現，直播可看性下降。</dd>
+        <dt>歸屬</dt><dd>越南代理商（導播）</dd>
+        <dt>Week 2</dt><dd>加強導播對戰況熱點的判讀訓練，或依剩餘人數／交戰位置設定固定切鏡觸發條件。</dd>
+      </dl>
+    </div>
+
+    <h3>C. 其他營運項目 <span class="h3-tag">3 ITEMS</span></h3>
+
+    <div class="issue sev-high">
+      <div class="issue-top"><span class="idc">C-1</span><h4>直播廣告導流通知過晚</h4><span class="chip chip-crit">高</span></div>
+      <dl>
+        <dt>現象</dt><dd>上週直播於開播後 30 分鐘才收到廣告導流設定通知。</dd>
+        <dt>影響</dt><dd>導流效益受損，且需於直播進行中臨時調整。</dd>
+        <dt>歸屬</dt><dd>SEA 總部 ／ 越南代理商</dd>
+        <dt>Week 2</dt><dd>如本週需要廣告導流，請於 <strong>9 月 24 日（四）前</strong>通知台灣團隊。</dd>
+      </dl>
+    </div>
+
+    <div class="issue sev-high">
+      <div class="issue-top"><span class="idc">C-2</span><h4>轉播圖文卡沿用未修正版本播出</h4><span class="chip chip-crit">高</span></div>
+      <dl>
+        <dt>現象</dt><dd>台灣團隊於賽前已標記問題之文字卡，直播中仍以未修正版本播出。</dd>
+        <dt>影響</dt><dd>已投入之校對工作失效，需重新製作 Week 2 素材（額外重工）。</dd>
+        <dt>歸屬</dt><dd>越南代理商（素材替換與版本控管）</dd>
+        <dt>Week 2</dt><dd>台灣團隊今日重製 Week 2 素材交越南代理商替換，<strong>替換完成後須回報</strong>；如有新增文字卡需繁中化，請於 <strong>9 月 22 日（二）EOD 前</strong>提交。</dd>
+      </dl>
+    </div>
+
+    <div class="issue sev-mid">
+      <div class="issue-top"><span class="idc">C-3</span><h4>台灣設計支援之範圍與界線</h4><span class="chip chip-warn">中</span></div>
+      <dl>
+        <dt>現象</dt><dd>台灣團隊可支援設計素材本地化，但需求須事前提供。</dd>
+        <dt>影響</dt><dd>若持續以臨時需求方式提出，連假期間將無人力可承接。</dd>
+        <dt>歸屬</dt><dd>越南代理商（需求提出時程）</dd>
+        <dt>Week 2</dt><dd>本地化需求請於 <strong>9 月 22 日（二）EOD 前</strong>提供；賽果社群圖已確認僅需 2 張且繁中模板備妥；連假期間台灣端無設計待命，臨時需求須由越南代理商內部完成。</dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ 6. 待辦與截止 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Week 2 待辦與截止日</h2></div>
+    <p class="sec-note">以下為台灣團隊已向 SEA 與越南代理商提出之時程要求，目的在於於中秋連假前完成所有可事前規劃事項。</p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr>
+            <th>截止</th>
+            <th>項目</th>
+            <th>負責方</th>
+            <th>對應</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num"><span class="chip chip-crit">09/22（二）EOD</span></td>
+            <td>新增文字卡繁中化需求提交；所有需本地化之設計內容提供</td>
+            <td>越南代理商 → TW</td>
+            <td class="idc">C-2 · C-3</td>
+          </tr>
+          <tr>
+            <td class="num"><span class="chip chip-crit">09/22（二）</span></td>
+            <td>台灣團隊重製 Week 2 圖文卡素材並交付替換</td>
+            <td>TW → 越南代理商</td>
+            <td class="idc">C-2</td>
+          </tr>
+          <tr>
+            <td class="num"><span class="chip chip-warn">09/23（三）</span></td>
+            <td>Week 2 所有支援項目定案：英語裁判配置、Discord 權限開通、最終 Rundown（含主播休息時段）、訊息同步流程</td>
+            <td>SEA ／ 越南代理商</td>
+            <td class="idc">A-1 · A-2 · A-3 · B-2</td>
+          </tr>
+          <tr>
+            <td class="num"><span class="chip chip-warn">本週內</span></td>
+            <td>推流設定、伺服器與線路檢測並回覆結果</td>
+            <td>越南代理商</td>
+            <td class="idc">B-3</td>
+          </tr>
+          <tr>
+            <td class="num"><span class="chip chip-warn">09/24（四）</span></td>
+            <td>如需廣告導流，須於此日前通知台灣團隊</td>
+            <td>SEA ／ 越南代理商</td>
+            <td class="idc">C-1</td>
+          </tr>
+          <tr>
+            <td class="num"><span class="chip chip-acc">Week 2 開賽前</span></td>
+            <td>對外完整說明 3v3 團隊模式之模式選擇機制</td>
+            <td>SEA ／ 越南代理商</td>
+            <td class="idc">B-5</td>
+          </tr>
+          <tr>
+            <td class="num"><span class="chip chip-mut">09/25–09/28</span></td>
+            <td>台灣中秋連假：無設計人員待命，臨時需求須由越南代理商內部消化</td>
+            <td>越南代理商</td>
+            <td class="idc">C-3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout is-accent">
+      <h4>提報建議</h4>
+      <ul class="ul">
+        <li>建立 <b>Week 2 前置交付檢核點</b>：以 9/23（三）為單一定案節點，逾期項目視同不執行，避免再次以台灣端臨時人力補位。</li>
+        <li>要求 <b>Rundown 版本控管</b>：賽前定案版本即為執行版本，賽中變動須即時通報，不得於當日逕行調整。</li>
+        <li>明確 <b>連假期間支援範圍</b>：事前書面確認台灣端於 9/25–9/28 不提供臨時設計與營運待命。</li>
+        <li>要求越南代理商 <b>回覆推流端檢測結果</b>，將直播卡頓責任歸屬釐清並留存紀錄。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 附錄 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">07</span><h2>附錄：原始溝通內容</h2></div>
+    <p class="sec-note">本報告內容之依據，為台灣團隊致 SEA 團隊（Lucy）之改善建議原文，完整保留如下。</p>
+
+    <div class="appendix">
+<pre>@Lucy Hi Lucy, Based on observations from the TW team, player feedback, caster input, and reports from our live stream vendor during last week's event, we have summarized the following key suggestions for operational improvement.
+
+As a heads-up, the TW team was requested to provide unexpected staffing and operational support on short notice—during the same week, the night before, and even on the match day itself—for the first week's event. Therefore, we hope to finalize all required support items for Week 2 by this Wednesday, allowing us to complete our preparations ahead of time and avoid any execution issues.
+
+Please also note that Taiwan will have a Mid-Autumn Festival national holiday from this Friday through next Monday (Sep 25 – Sep 28). Managing ad-hoc staffing and communication during the holiday will be significantly more challenging. We kindly ask the SEA and Vietnamese agency teams to help complete all setup and communication for pre-plannable items by this Wednesday. Thank you!
+
+【Tournament Operations &amp; Communication】
+1. Referee Language Support: Taiwanese players reported that referees in the match rooms only communicated in Vietnamese, leaving TW players unable to understand referee instructions. Beyond impacting match progression, it made players feel unfairly treated. For Week 2, please arrange English-speaking referees for rooms with Taiwanese players, which will also allow the TW team to assist with English-based communication.
+
+2. Real-time Match Status Updates: It was originally agreed that the Vietnamese agency would sync event status on Discord in real time. However, during actual execution, updates were delayed and incomplete, and the detailed daily Rundown differed from the pre-provided version. As a result, our TW caster couldn't follow the event progression, leaving the TW team unable to assist. Please optimize the messaging workflow for Week 2, confirm the final Rundown prior to matches, and immediately notify the TW team of any live changes during matches.
+
+3. Discord Room Permissions: Please grant the TW team view access to all participating player rooms (Discord list provided previously) so we can monitor status in real time and assist directly during unexpected issues.
+
+【Broadcasting &amp; Schedule Management】
+1. Schedule Overruns &amp; Lengthy Flow: The TW team observed that delays were primarily caused by extended match durations in the 3v3 Team Mode and overly long player check-in/registration times. This compromised the overall stream's smoothness, making it feel dragged out. Please optimize this workflow to improve viewing flow.
+
+2. Caster Rest Breaks: During Week 1, actual casting time exceeded 6 hours without any scheduled rest periods, forcing the caster to remain seated continuously. For Week 2, please clearly schedule caster rest breaks (suggested: 10 minutes every hour, integrated with technical pauses or mini-game segments) and reflect these in the Rundown.
+
+3. Stream Stuttering &amp; Lag: Our partner broadcast vendor in Taiwan switched to multiple dedicated network lines, but the stuttering persisted, indicating the issue does not originate on the TW end. Please have the Vietnamese agency inspect push-stream settings, servers, and line conditions this week and share the inspection results.
+
+4. Caster Downtime / Dead Air: On September 20, there were multiple prolonged dead-air gaps where casters were left waiting blindly. Please strengthen real-time updates regarding match status (estimated start times for upcoming matches and reasons for delays) so casters can prepare in advance.
+
+5. Public Explanation of 3v3 Team Mode Selection Rules: Current public communications state "random selection among 7 modes," whereas actual execution follows a specific order sequence. We recommend fully explaining this mechanism publicly prior to Week 2 matches so players can prepare accordingly and casters can deliver precise commentary.
+
+6. Wild Royale (Solo) Camera Switching: The spectator camera frequently lingered on player movement, missing key engagements. We suggest training the observer director on assessing battle hotspots or setting fixed triggers for camera switches based on remaining player counts or active combat locations.
+
+【Other Operational Items】
+1. Live Stream Ad Traffic Redirection: For last week's broadcast, we were notified about ad redirection setup just half an hour after going live. If ad redirection is needed this week, please notify us before September 24 (Thu).
+
+2. Broadcast Graphics &amp; Text Cards: Text cards flagged by the TW team prior to the event were still aired in their uncorrected versions during the live stream. The TW team will regenerate the Week 2 assets today for the Vietnamese agency to swap in—please report back once replaced. If any new text cards require Traditional Chinese localization, please submit them by EOD September 22 (Tue).
+
+3. TW Design Support: The TW team can support localizing design assets; please provide any content requiring localization by EOD September 22 (Tue). Regarding social graphics for match results, we confirmed that only two images are needed, and this week's Traditional Chinese template is ready—the Vietnamese agency only needs to update the header to "Week 2" and refresh the winner info. For staffing allocation purposes, no TW designers will be on standby over the coming weekend, so any ad-hoc design requests must be completed by the Vietnamese agency internally.</pre>
+    </div>
+  </section>
+
+  <footer>
+    製表：TW 團隊 · 2026/09/21 ｜ 資料來源：Week 1 賽事期間台灣團隊觀察、玩家回饋、主播回報、台灣合作轉播商檢測結果，以及致 SEA 團隊之改善建議原文。<br>
+    時間軸中「T–4 ~ T–2 / T–1 / T 日」為依原始溝通所述「同週、前一晚、比賽當天」對應之相對節點，非逐筆時戳紀錄。
+  </footer>
+</div>
+
+</body>
+</html>
